@@ -17,24 +17,52 @@
 package com.example.xyzreader.ui;
 
 import android.content.Context;
-import android.os.Parcelable;
+import android.support.design.widget.FloatingActionButton;
 import android.util.AttributeSet;
-import android.util.Log;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ScrollView;
+
+import com.example.xyzreader.R;
 
 /**
  * A custom ScrollView that can accept a scroll listener.
  */
 public class ObservableScrollView extends ScrollView {
+    private static final String TAG = ObservableScrollView.class.getSimpleName();
     private Callbacks mCallbacks;
+    private FloatingActionButton fab;
 
     public ObservableScrollView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
+    public void setFloatingActionButton(FloatingActionButton fab) {
+        this.fab = fab;
+    }
+
+
     @Override
     protected void onScrollChanged(int l, int t, int oldl, int oldt) {
         super.onScrollChanged(l, t, oldl, oldt);
+        //Log.d(TAG, "onScrollChanged: " + l + " " + t + " " + oldl + " " + oldt + " ");
+        Animation scaleDown = AnimationUtils.loadAnimation(getContext(), R.anim.scale_down);
+        Animation scaleUp = AnimationUtils.loadAnimation(getContext(), R.anim.scale_up);
+        if (fab != null) {
+            if (t > oldt) {
+                if (fab.getVisibility() == VISIBLE) {
+                    fab.startAnimation(scaleDown);
+                    fab.setVisibility(GONE);
+                }
+
+            } else {
+                if (fab.getVisibility() == GONE) {
+                    fab.startAnimation(scaleUp);
+                    fab.setVisibility(VISIBLE);
+                }
+
+            }
+        }
         if (mCallbacks != null) {
             mCallbacks.onScrollChanged();
         }
